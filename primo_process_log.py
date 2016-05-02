@@ -13,6 +13,7 @@ logs_parsed = queries_written = num_of_deeps = advanced = browse = 0
 extension = "log"
 year = "2013"
 month = "10"
+monthstr = ""
 
 # Argument Parsing
 
@@ -31,15 +32,42 @@ if options:
     if options.month:
         month = options.month
 
+# Convert month to 3 code string
+
+if month == "01":
+    monthstr = "Jan"
+if month == "02":
+    monthstr = "Feb"
+if month == "03":
+    monthstr = "Mar"
+if month == "04":
+    monthstr = "Apr"
+if month == "05":
+    monthstr = "May"
+if month == "06":
+    monthstr = "Jun"
+if month == "07":
+    monthstr = "Jul"
+if month == "08":
+    monthstr = "Aug"
+if month == "09":
+    monthstr = "Sep"
+if month == "10":
+    monthstr = "Oct"
+if month == "11":
+    monthstr = "Nov"
+if month == "12":
+    monthstr = "Dec"
+
 # date range/logfile name
-while file_num < 30:
+while file_num < 3:
     # date range/logfile name
     logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num, extension), 'r')
-    print("Parsing file number {0}.").format(file_num)
+    print("Parsing file localhost_access_log.{0}-{1}-{2}.{3}").format(year, month, file_num, extension)
     headers = logfile.readlines()
     for header in headers:
         # date range/logfile name
-        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/Feb/2016):(\d+:\d+:\d+)', header)
+        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/{0}/{1}):(\d+:\d+:\d+)'.format(monthstr, year), header)
         query_type = []
         if log:
             ip = log.group(1)
@@ -91,9 +119,6 @@ while file_num < 30:
                         if '&mode=BrowseSearch' in link:
                             query_type.append('Browse Search')
                             browse += 1
-                        if '&tab=cr' in link:
-                            query_type.append('Course Reserve')
-                            course_reserve += 1
                         output.write('<a href="' + link + '">' + str(logs_parsed) + '</a>&nbsp;&nbsp;&nbsp;Type: ' + str(query_type) + '</b>\n')
                         output_csv.writerow([str(logs_parsed), date, time, query, issn, link])
                         queries_written += 1
