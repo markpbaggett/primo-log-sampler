@@ -2,22 +2,84 @@
 import re
 import random
 import csv
+from optparse import OptionParser
 
 # set initial variables
 # date range/logfile name
 file_num = 1
 output = open('./output_files/all_search_queries.html', 'w')
 output_csv = csv.writer(open('./output_files/output.csv', 'w'))
-logs_parsed = queries_written = num_of_deeps = advanced = 0
+logs_parsed = queries_written = num_of_deeps = advanced = browse = 0
+extension = "log"
+year = "2013"
+month = "10"
+monthstr = ""
+url = 'http://search.library.vcu.edu'
+number_of_files = 10
+
+# Argument Parsing
+
+parser = OptionParser()
+parser.add_option("-x", "--extension", dest="extension", help="Specify extension.  The default is log.")
+parser.add_option("-y", "--year", dest="year", help="Specify year.  The default is 2013.")
+parser.add_option("-m", "--month", dest="month", help="Specify month.  The default is 10.")
+parser.add_option("-l", "--link", dest="link", help="Specify Primo URL.  The default is http://search.library.vcu.edu.")
+parser.add_option("-f", "--files", dest="files", help="Specify the number of files to parse.  The default is 10.")
+parser.add_option("-s", "--start", dest="start", help="Specify the file to start with.  The default is 1.")
+
+(options, args) = parser.parse_args()
+
+if options:
+    if options.extension:
+        extension = options.extension
+    if options.year:
+        year = options.year
+    if options.month:
+        month = options.month
+    if options.link:
+        url = options.link
+    if options.files:
+        number_of_files = int(options.files)
+    if options.start:
+        file_num = int(options.start)
+
+# Convert month to 3 code string
+
+if month == "01":
+    monthstr = "Jan"
+if month == "02":
+    monthstr = "Feb"
+if month == "03":
+    monthstr = "Mar"
+if month == "04":
+    monthstr = "Apr"
+if month == "05":
+    monthstr = "May"
+if month == "06":
+    monthstr = "Jun"
+if month == "07":
+    monthstr = "Jul"
+if month == "08":
+    monthstr = "Aug"
+if month == "09":
+    monthstr = "Sep"
+if month == "10":
+    monthstr = "Oct"
+if month == "11":
+    monthstr = "Nov"
+if month == "12":
+    monthstr = "Dec"
 
 # date range/logfile name
-while file_num < 30:
+number_of_files += file_num
+while file_num <= number_of_files:
     # date range/logfile name
-    logfile = open('./access_logs/localhost_access_log.2013-10-%02d.log' %file_num, 'r')
+    logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num, extension), 'r')
+    print("Parsing file localhost_access_log.{0}-{1}-{2}.{3}").format(year, month, file_num, extension)
     headers = logfile.readlines()
     for header in headers:
         # date range/logfile name
-        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/Oct/2013):(\d+:\d+:\d+)', header)
+        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/{0}/{1}):(\d+:\d+:\d+)'.format(monthstr, year), header)
         query_type = []
         if log:
             ip = log.group(1)
@@ -56,7 +118,7 @@ while file_num < 30:
                                 issn = issn.group(1)
                     logs_parsed += 1
                     # search URL prefix
-                    link = 'http://search.library.vcu.edu' + m
+                    link = url + m
                     if "afterPDS=" not in link and "almaAzSearch=" not in link:
                         if 'dlSearch' in link:
                             query_type.append('Deep Link')
@@ -69,9 +131,6 @@ while file_num < 30:
                         if '&mode=BrowseSearch' in link:
                             query_type.append('Browse Search')
                             browse += 1
-                        if '&tab=cr' in link:
-                            query_type.append('Course Reserve')
-                            course_reserve += 1
                         output.write('<a href="' + link + '">' + str(logs_parsed) + '</a>&nbsp;&nbsp;&nbsp;Type: ' + str(query_type) + '</b>\n')
                         output_csv.writerow([str(logs_parsed), date, time, query, issn, link])
                         queries_written += 1
