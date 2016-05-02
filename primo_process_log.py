@@ -2,22 +2,44 @@
 import re
 import random
 import csv
+from optparse import OptionParser
 
 # set initial variables
 # date range/logfile name
 file_num = 1
 output = open('./output_files/all_search_queries.html', 'w')
 output_csv = csv.writer(open('./output_files/output.csv', 'w'))
-logs_parsed = queries_written = num_of_deeps = advanced = 0
+logs_parsed = queries_written = num_of_deeps = advanced = browse = 0
+extension = "log"
+year = "2013"
+month = "10"
+
+# Argument Parsing
+
+parser = OptionParser()
+parser.add_option("-x", "--extension", dest="extension", help="Specify extension.  The default is log.")
+parser.add_option("-y", "--year", dest="year", help="Specify year.  The default is 2013.")
+parser.add_option("-m", "--month", dest="month", help="Specify month.  The default is 10.")
+
+(options, args) = parser.parse_args()
+
+if options:
+    if options.extension:
+        extension = options.extension
+    if options.year:
+        year = options.year
+    if options.month:
+        month = options.month
 
 # date range/logfile name
 while file_num < 30:
     # date range/logfile name
-    logfile = open('./access_logs/localhost_access_log.2013-10-%02d.log' %file_num, 'r')
+    logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num, extension), 'r')
+    print("Parsing file number {0}.").format(file_num)
     headers = logfile.readlines()
     for header in headers:
         # date range/logfile name
-        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/Oct/2013):(\d+:\d+:\d+)', header)
+        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/Feb/2016):(\d+:\d+:\d+)', header)
         query_type = []
         if log:
             ip = log.group(1)
