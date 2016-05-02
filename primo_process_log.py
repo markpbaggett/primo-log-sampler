@@ -14,6 +14,7 @@ extension = "log"
 year = "2013"
 month = "10"
 monthstr = ""
+url = 'http://search.library.vcu.edu'
 
 # Argument Parsing
 
@@ -21,6 +22,7 @@ parser = OptionParser()
 parser.add_option("-x", "--extension", dest="extension", help="Specify extension.  The default is log.")
 parser.add_option("-y", "--year", dest="year", help="Specify year.  The default is 2013.")
 parser.add_option("-m", "--month", dest="month", help="Specify month.  The default is 10.")
+parser.add_option("-l", "--link", dest="link", help="Specify Primo URL.  The default is http://search.library.vcu.edu.")
 
 (options, args) = parser.parse_args()
 
@@ -31,6 +33,8 @@ if options:
         year = options.year
     if options.month:
         month = options.month
+    if options.link:
+        url = options.link
 
 # Convert month to 3 code string
 
@@ -106,7 +110,7 @@ while file_num < 3:
                                 issn = issn.group(1)
                     logs_parsed += 1
                     # search URL prefix
-                    link = 'http://search.library.vcu.edu' + m
+                    link = url + m
                     if "afterPDS=" not in link and "almaAzSearch=" not in link:
                         if 'dlSearch' in link:
                             query_type.append('Deep Link')
