@@ -13,7 +13,7 @@ logs_parsed = queries_written = num_of_deeps = advanced = browse = 0
 extension = "log"
 year = "2013"
 month = "10"
-monthstr = ""
+file_num_str = monthstr = ""
 url = 'http://search.library.vcu.edu'
 number_of_files = 10
 
@@ -72,10 +72,16 @@ if month == "12":
 
 # date range/logfile name
 number_of_files += file_num
-while file_num <= number_of_files:
+while file_num < number_of_files:
     # date range/logfile name
-    logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num, extension), 'r')
-    print("Parsing file localhost_access_log.{0}-{1}-{2}.{3}").format(year, month, file_num, extension)
+    file_num_str = str(file_num)
+    if len(file_num_str) == 1:
+        file_num_str = "0" + str(file_num)
+        print(file_num)
+    else:
+        file_num_str = str(file_num)
+    logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num_str, extension), 'r')
+    print("Parsing file localhost_access_log.{0}-{1}-{2}.{3}").format(year, month, file_num_str, extension)
     headers = logfile.readlines()
     for header in headers:
         # date range/logfile name
