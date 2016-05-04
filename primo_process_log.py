@@ -13,9 +13,10 @@ logs_parsed = queries_written = num_of_deeps = advanced = browse = 0
 extension = "log"
 year = "2013"
 month = "10"
-file_num_str = monthstr = ""
+file_num_str = ""
 url = 'http://search.library.vcu.edu'
 number_of_files = 10
+month_str = {"01":"Jan", "02":"Feb", "03":"Mar", "04":"Apr", "05":"May", "06":"Jun", "07":"Jul", "08":"Aug", "09":"Sep", "10":"Oct", "11":"Nov", "12":"Dec"}
 
 # Argument Parsing
 
@@ -43,33 +44,6 @@ if options:
     if options.start:
         file_num = int(options.start)
 
-# Convert month to 3 code string
-
-if month == "01":
-    monthstr = "Jan"
-if month == "02":
-    monthstr = "Feb"
-if month == "03":
-    monthstr = "Mar"
-if month == "04":
-    monthstr = "Apr"
-if month == "05":
-    monthstr = "May"
-if month == "06":
-    monthstr = "Jun"
-if month == "07":
-    monthstr = "Jul"
-if month == "08":
-    monthstr = "Aug"
-if month == "09":
-    monthstr = "Sep"
-if month == "10":
-    monthstr = "Oct"
-if month == "11":
-    monthstr = "Nov"
-if month == "12":
-    monthstr = "Dec"
-
 # date range/logfile name
 number_of_files += file_num
 while file_num < number_of_files:
@@ -77,7 +51,6 @@ while file_num < number_of_files:
     file_num_str = str(file_num)
     if len(file_num_str) == 1:
         file_num_str = "0" + str(file_num)
-        print(file_num)
     else:
         file_num_str = str(file_num)
     logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num_str, extension), 'r')
@@ -85,7 +58,7 @@ while file_num < number_of_files:
     headers = logfile.readlines()
     for header in headers:
         # date range/logfile name
-        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/{0}/{1}):(\d+:\d+:\d+)'.format(monthstr, year), header)
+        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/{0}/{1}):(\d+:\d+:\d+)'.format(month_str[month], year), header)
         query_type = []
         if log:
             ip = log.group(1)
