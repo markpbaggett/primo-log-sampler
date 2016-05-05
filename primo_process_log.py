@@ -131,7 +131,6 @@ inp2 = open('./output_files/all_search_queries.html', 'r')
 subset = random.sample(inp2.readlines(), known_items)
 subs.write("<br>".join(str(x) for x in subset))
 reader = csv.reader(open('./output_files/links.csv'))
-# my_queries = dict((rows[0],rows[1]) for rows in reader)
 my_queries = {}
 row_num = 0
 for row in reader:
@@ -143,7 +142,7 @@ known_item_txt = open('./output_files/known_item.txt', 'w')
 kx = 1
 while kx <= known_items:
     known_item_txt.write('{0}. Is this a <a href="'.format(kx))
-    known_item_txt.write(str(my_queries.get(str(kx), 0)))
+    known_item_txt.write(random.choice(my_queries.values()))
     known_item_txt.write('">known-item search</a>?\n\nYes\nNo\n\n')
     if kx % 5 == 0:
         known_item_txt.write('[[PageBreak]]\n')
