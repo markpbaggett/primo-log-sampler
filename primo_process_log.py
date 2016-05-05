@@ -9,6 +9,7 @@ from optparse import OptionParser
 file_num = 1
 output = open('./output_files/all_search_queries.html', 'w')
 output_csv = csv.writer(open('./output_files/output.csv', 'w'))
+link_csv = csv.writer(open('./output_files/links.csv', 'w'))
 logs_parsed = queries_written = num_of_deeps = advanced = browse = 0
 extension = "log"
 year = "2013"
@@ -16,7 +17,9 @@ month = "10"
 file_num_str = ""
 url = 'http://search.library.vcu.edu'
 number_of_files = 10
-month_str = {"01":"Jan", "02":"Feb", "03":"Mar", "04":"Apr", "05":"May", "06":"Jun", "07":"Jul", "08":"Aug", "09":"Sep", "10":"Oct", "11":"Nov", "12":"Dec"}
+month_str = {"01":"Jan", "02":"Feb", "03":"Mar", "04":"Apr", "05":"May", "06":"Jun", "07":"Jul", "08":"Aug", "09":"Sep",
+             "10":"Oct", "11":"Nov", "12":"Dec"}
+known_items = 1000
 
 # Argument Parsing
 
@@ -53,12 +56,14 @@ while file_num < number_of_files:
         file_num_str = "0" + str(file_num)
     else:
         file_num_str = str(file_num)
-    logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num_str, extension), 'r')
+    logfile = open('./access_logs/localhost_access_log.{0}-{1}-{2}.{3}'.format(year, month, file_num_str, extension),
+                   'r')
     print("Parsing file localhost_access_log.{0}-{1}-{2}.{3}").format(year, month, file_num_str, extension)
     headers = logfile.readlines()
     for header in headers:
         # date range/logfile name
-        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/{0}/{1}):(\d+:\d+:\d+)'.format(month_str[month], year), header)
+        log = re.search('(^\d+[.]\d+[.]\d+[.]\d+) - - [()[]+(\d+/{0}/{1}):(\d+:\d+:\d+)'.format(month_str[month], year),
+                        header)
         query_type = []
         if log:
             ip = log.group(1)
@@ -110,8 +115,10 @@ while file_num < number_of_files:
                         if '&mode=BrowseSearch' in link:
                             query_type.append('Browse Search')
                             browse += 1
-                        output.write('<a href="' + link + '">' + str(logs_parsed) + '</a>&nbsp;&nbsp;&nbsp;Type: ' + str(query_type) + '</b>\n')
+                        output.write('<a href="' + link + '">' + str(logs_parsed) + '</a>&nbsp;&nbsp;&nbsp;Type: ' +
+                                     str(query_type) + '</b>\n')
                         output_csv.writerow([str(logs_parsed), date, time, query, issn, link])
+                        link_csv.writerow([link])
                         queries_written += 1
     file_num += 1
 print("Number of logs parsed: {0}\n".format(logs_parsed))
@@ -121,5 +128,23 @@ print("Number of advanced searches: {0}\n".format(advanced))
 
 subs = open('./output_files/sample_set_search_queries.html', 'w')
 inp2 = open('./output_files/all_search_queries.html', 'r')
-subset = random.sample(inp2.readlines(), 100)
+subset = random.sample(inp2.readlines(), known_items)
 subs.write("<br>".join(str(x) for x in subset))
+reader = csv.reader(open('./output_files/links.csv'))
+# my_queries = dict((rows[0],rows[1]) for rows in reader)
+my_queries = {}
+row_num = 0
+for row in reader:
+    row_num += 1
+    k = str(row_num)
+    my_queries[k] = row[0]
+
+known_item_txt = open('./output_files/known_item.txt', 'w')
+kx = 1
+while kx <= known_items:
+    known_item_txt.write('{0}. Is this a <a href="'.format(kx))
+    known_item_txt.write(str(my_queries.get(str(kx), 0)))
+    known_item_txt.write('">known-item search</a>?\n\nYes\nNo\n\n')
+    if kx % 5 == 0:
+        known_item_txt.write('[[PageBreak]]\n')
+    kx += 1
