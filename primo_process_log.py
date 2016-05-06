@@ -143,7 +143,12 @@ kx = 1
 while kx <= known_items:
     known_item_txt.write('{0}. Is this a <a href="'.format(kx))
     known_item_txt.write(random.choice(my_queries.values()))
-    known_item_txt.write('">known-item search</a>?\n\nYes\nNo\n\n')
+    known_item_txt.write('">known-item search</a>?\n\nNo\nNot Sure\nYes - DOI\nYes - Author & Title (or Partial)\n'
+                         'Yes - Book Title String (Partial)\nYes - Article Title String\nYes - Journal Title String\n'
+                         'Yes - ISSN\n\n')
     if kx % 5 == 0:
-        known_item_txt.write('[[PageBreak]]\n')
+        if kx % 100 == 0:
+            known_item_txt.write('[[Block]]\n')
+        else:
+            known_item_txt.write('[[PageBreak]]\n')
     kx += 1
