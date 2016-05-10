@@ -61,7 +61,7 @@ def create_survey(x):
     known_item_txt = open('./output_files/known_item.txt', 'w')
     kx = 1
     while kx <= x:
-        known_item_txt.write('{0}. Is this a <a href="'.format(kx))
+        known_item_txt.write('{0}. Is this a <a target="blank" href="'.format(kx))
         known_item_txt.write(random.choice(my_queries.values()))
         known_item_txt.write('">known-item search</a>?\n\nNo\nNot Sure\nYes - DOI\nYes - Author & Title (or Partial)\n'
                          'Yes - Book Title String (Partial)\nYes - Article Title String\nYes - Journal Title String\n'
